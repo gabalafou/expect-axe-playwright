@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { attachmentExists } from '../../utils/attachments'
 import { readFile } from '../../utils/file'
+import fs from 'fs/promises'
 
 test.describe.parallel('toBeAccessible', () => {
   test.describe('page', () => {
@@ -129,4 +130,16 @@ test.describe.parallel('toBeAccessible', () => {
       .catch(() => Promise.resolve())
     expect(attachmentExists(filename)).toBe(true)
   })
+
+  test('should attach accessibility tree', async ({ page }) => {
+    const filename = 'accessibility-tree.json';
+    const content = await readFile('accessible.html')
+    await page.setContent(content)
+    await expect(page).toBeAccessible({ timeout: 2000 })
+    const testInfo = test.info()
+    const attachment = testInfo.attachments.find((attachment) => attachment.name === filename)
+    const json = await fs.readFile(attachment!.path!, { encoding: 'utf-8' });
+    const tree = JSON.parse(json);
+    expect(tree).toBeTruthy();
+  });
 })

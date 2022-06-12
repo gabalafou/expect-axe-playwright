@@ -29,7 +29,8 @@
     "lint": "eslint .",
     "release": "./scripts/release.sh",
     "test": "playwright test",
-    "ts": "tsc"
+    "ts": "tsc",
+    "prepare": "tsc"
   },
   "dependencies": {
     "axe-core": "^4.4.1",

@@ -39,13 +39,28 @@ export async function toBeAccessible(
       }
     })
 
-    // If there are violations, attach an HTML report to the test for additional
-    // visibility into the issue.
-    if (!ok) {
-      const html = await createHTMLReport(results)
-      const filename = opts.filename || 'axe-report.html'
-      await attach(info, filename, html)
-    }
+    // Attach additional files to the HTML report for CI and for visibility into
+    // any issues:
+    // - HTML report
+    // - JSON used to generate the HTML report
+    // - Accessibility Tree of the page
+
+    // Attach HTML report
+    const html = await createHTMLReport(results)
+    const filename = opts.filename || 'axe-report.html'
+    await attach(info, filename, html)
+
+    // Attach JSON used to generate the HTML report
+    const json = JSON.stringify(results, null, 2)
+    const jsonFilename = 'axe-report.json'
+    await attach(info, jsonFilename, json)
+
+    // Attach accessibility tree
+    const page = locator.page()
+    const accessibilityTree = await page.accessibility.snapshot()
+    const accessibilityTreeJson = JSON.stringify(accessibilityTree, null, 2)
+    const treeFilename = 'accessibility-tree.json'
+    await attach(info, treeFilename, accessibilityTreeJson)
 
     return {
       pass: ok,
