@@ -30,7 +30,7 @@
     "release": "./scripts/release.sh",
     "test": "playwright test",
     "ts": "tsc",
-    "prepare": "npm run ts"
+    "postinstall": "npm run ts"
   },
   "dependencies": {
     "axe-core": "^4.4.2",
